@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Penjual;
+use App\Models\Produk;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class PenjualController extends Controller
 {
@@ -14,11 +17,11 @@ class PenjualController extends Controller
      */
     public function index()
     {
-         //get pegawai
-         $penjuals = Penjual::latest()->paginate(5);
+         //get posts
+        $penjuals = Penjual::latest()->paginate(5);
 
-         //render view with pegawai
-         return view('penjual.index', compact('penjuals'));
+        //render view with posts
+        return view('penjual.index', compact('penjuals'));
     }
 
     /**
@@ -28,7 +31,7 @@ class PenjualController extends Controller
      */
     public function create()
     {
-        //
+        return view('penjual.create');
     }
 
     /**
@@ -39,7 +42,22 @@ class PenjualController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      // dd($request->all());
+        $this->validate($request, [
+            'nama'           =>'required|min:0',
+            'alamat'         =>'required|min:0',
+        ]);
+
+        //create post
+        
+        Penjual::create([
+            'nama'    =>$request->nama,
+            'alamat'  =>$request->alamat,  
+        ]);
+        
+      
+     
+        return redirect()->route('penjual.index')->with(['success' => 'Data Berhasil Disimpan!']);
     }
 
     /**
@@ -50,7 +68,7 @@ class PenjualController extends Controller
      */
     public function show(Penjual $penjual)
     {
-        //
+        return view('penjual.tambahproduk', compact('penjual'));
     }
 
     /**
@@ -61,7 +79,7 @@ class PenjualController extends Controller
      */
     public function edit(Penjual $penjual)
     {
-        //
+        return view('penjual.tambahproduk', compact('penjual'));
     }
 
     /**
@@ -73,7 +91,28 @@ class PenjualController extends Controller
      */
     public function update(Request $request, Penjual $penjual)
     {
-        //
+        //validate form
+        dd($request->all());
+        $this->validate($request, [
+            
+            'nama'          => 'required',
+            'alamat'        => 'required',
+            // 'namaproduk'    => 'required',
+            // 'harga'         => 'required',
+
+        ]);
+
+        //create post
+        $penjuals=Penjual::create([
+            
+            'nama'          => $request->nama,
+            'alamat'        => $request->alamat,
+            // 'namaproduk'    => $request->namaproduk,
+            // 'harga'         => $request->harga,
+        ]);
+
+        //redirect to index
+        return redirect()->route('penjuals.index')->with(['success' => 'Data Berhasil Disimpan!']);
     }
 
     /**
@@ -84,6 +123,9 @@ class PenjualController extends Controller
      */
     public function destroy(Penjual $penjual)
     {
-        //
+        $penjual->delete();
+
+        //redirect to index
+        return redirect()->route('penjual.index')->with(['success' => 'Data Berhasil Dihapus!']);
     }
 }
